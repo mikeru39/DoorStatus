@@ -31,6 +31,7 @@ const AppTextInput = ({type = 'email', placeHolder, style, onChange}) => {
           <TextInput
             secureTextEntry={status}
             style={input}
+            autoCapitalize="none"
             placeholder={placeHolder}
             placeholderTextColor={color}
             selectionColor={color}
@@ -57,10 +58,12 @@ const AppTextInput = ({type = 'email', placeHolder, style, onChange}) => {
     case 'email':
       return (
         <Neomorph inner style={{...textInput, shadowRadius: 5, ...style}}>
-          <Ionicons name={'key-outline'} size={24} color={color} />
+          <Ionicons name={'mail-outline'} size={24} color={color} />
           <TextInput
             style={input}
             placeholder={placeHolder}
+            autoCapitalize="none"
+            keyboardType="email-address"
             placeholderTextColor={color}
             onChangeText={onChange}
             selectionColor={THEME.MAIN_COLOR}
@@ -76,6 +79,7 @@ const AppTextInput = ({type = 'email', placeHolder, style, onChange}) => {
           <TextInput
             style={input}
             placeholder={placeHolder}
+            autoCapitalize="none"
             placeholderTextColor={color}
             onChangeText={onChange}
             selectionColor={THEME.MAIN_COLOR}

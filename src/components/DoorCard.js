@@ -1,87 +1,85 @@
 import React, {useEffect, useState} from 'react';
-import {Dimensions, View, StyleSheet} from 'react-native';
+import {
+  Dimensions,
+  View,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import {AppText} from './uikit';
 import {THEME} from '../theme';
 import {Neomorph} from 'react-native-neomorph-shadows';
-import database from '@react-native-firebase/database';
 import LinearGradient from 'react-native-linear-gradient';
+import {useDispatch, useSelector} from 'react-redux';
+import {setDoorListener} from '../store/actions/doors';
 const windowWidth = Dimensions.get('window').width;
 
-const DoorCard = ({id, name}) => {
+const DoorCard = ({id, name, onPress}) => {
   const {wrap, card, title, status, statuses} = styles;
-  // const longPress = () => {
-  //   if (doorState.status === 1) {
-  //     switch (doorState.isLock) {
-  //       case 0:
-  //         database()
-  //           .ref(`doors/${id}/`)
-  //           .update({
-  //             isLock: 1,
-  //           })
-  //           .then(() => console.log('Data set.'));
-  //         break;
-  //       case 1:
-  //         database()
-  //           .ref(`doors/${id}/`)
-  //           .update({
-  //             isLock: 0,
-  //           })
-  //           .then(() => console.log('Data set.'));
-  //         break;
-  //     }
-  //   }
-  // };
-  const [doorState, setDoorState] = useState({});
+  const [door, setDoor] = useState({});
+  const state = useSelector((store) => store.doors.doors);
+  const loading = useSelector((store) => store.doors.loadingD);
+  const dispatch = useDispatch();
   useEffect(() => {
-    const onValueChange = database()
-      .ref(`/doors/${id}`)
-      .on('value', (snapshot) => {
-        setDoorState(snapshot.val());
-      });
-
-    // Stop listening for updates when no longer required
-    return () => database().ref(`/doors/${id}`).off('value', onValueChange);
-  }, [id]);
+    if (!loading) {
+      setDoor(state.find((item) => item.key === id));
+    } else {
+      dispatch(setDoorListener(id));
+    }
+  }, [state, id, loading, dispatch]);
   return (
     <Neomorph style={card}>
-      <LinearGradient
-        start={{x: 0.0, y: 0.0}}
-        end={{x: 1, y: 1}}
-        colors={['#3d424b', '#33383f']}
-        style={{
-          borderRadius: 25,
-          width: windowWidth * 0.8,
-          height: '100%',
-          padding: 20,
-        }}>
-        <View style={title}>
-          <AppText text={name} size={24} />
-        </View>
-        <View style={wrap}>
-          <View style={statuses}>
-            <View style={status}>
-              <AppText text={'Дверь: '} size={20} />
-              <AppText
-                size={20}
-                text={doorState.status === 1 ? 'закрыта' : 'открыта'}
-                color={
-                  doorState.status === 1 ? '#19DA2C' : THEME.NO_ACTIVE_COLOR
-                }
-              />
+      {!loading ? (
+        <TouchableWithoutFeedback onPress={() => onPress(id)}>
+          <LinearGradient
+            start={{x: 0.0, y: 0.0}}
+            end={{x: 1, y: 1}}
+            colors={[THEME.MAIN_COLOR, THEME.DOP_MAIN_COLOR]}
+            style={{
+              borderRadius: 25,
+              width: windowWidth * 0.8,
+              height: '100%',
+              padding: 20,
+            }}>
+            <View style={title}>
+              <AppText text={name} size={24} />
             </View>
-            <View style={status}>
-              <AppText text={'Замок: '} size={20} />
-              <AppText
-                size={20}
-                text={doorState.isLock === 1 ? 'вкл' : 'выкл'}
-                color={
-                  doorState.isLock === 1 ? '#19DA2C' : THEME.NO_ACTIVE_COLOR
-                }
-              />
+            <View style={wrap}>
+              <View style={statuses}>
+                <View style={status}>
+                  <AppText text={'Дверь: '} size={20} />
+                  <AppText
+                    size={20}
+                    text={door.status === 1 ? 'закрыта' : 'открыта'}
+                    color={
+                      door.status === 1 ? '#19DA2C' : THEME.NO_ACTIVE_COLOR
+                    }
+                  />
+                </View>
+                <View style={status}>
+                  <AppText text={'Замок: '} size={20} />
+                  <AppText
+                    size={20}
+                    text={door.isLock === 1 ? 'вкл' : 'выкл'}
+                    color={
+                      door.isLock === 1 ? '#19DA2C' : THEME.NO_ACTIVE_COLOR
+                    }
+                  />
+                </View>
+              </View>
             </View>
-          </View>
+          </LinearGradient>
+        </TouchableWithoutFeedback>
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            width: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <AppText text={'loading'} size={20} />
         </View>
-      </LinearGradient>
+      )}
     </Neomorph>
   );
 };

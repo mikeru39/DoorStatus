@@ -7,7 +7,7 @@ import {authToken} from '../store/actions/auth';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Neomorph} from 'react-native-neomorph-shadows';
 import {AppText} from '../components/uikit';
-const PinCodeScreen = ({navigation}) => {
+const PinCodeScreen = () => {
   const user = useSelector((state) => state.auth.username);
   const pinCode = useSelector((state) => state.auth.pinCode);
   const [value, onChangeText] = useState('');

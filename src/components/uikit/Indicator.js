@@ -4,23 +4,15 @@ import {Neomorph} from 'react-native-neomorph-shadows';
 import {THEME} from '../../theme';
 
 const Indicator = ({status, color}) => {
-  const opacity = new Animated.Value(0);
-  const AnimatedNeomorph = Animated.createAnimatedComponent(Neomorph);
   const {circle} = styles;
-  useEffect(() => {
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
-  });
+
   if (status) {
     return (
-      <AnimatedNeomorph
+      <Neomorph
         style={{
           ...circle,
           backgroundColor: color,
-          opacity,
+          shadowRadius: 3,
         }}
       />
     );

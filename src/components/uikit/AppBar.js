@@ -24,7 +24,7 @@ const AppBar = ({
         <View style={box} />
       )}
       <View style={title}>
-        <AppText text={text} size={25} />
+        <AppText text={text} size={28} />
       </View>
       {rightBtnName !== '' ? (
         <AppIconButton

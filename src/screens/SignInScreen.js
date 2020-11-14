@@ -1,29 +1,19 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, StatusBar} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import {AppTextInput, AppText, AppButton, AppBar} from '../components/uikit/';
 import {THEME} from '../theme';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import auth from '@react-native-firebase/auth';
+import {useDispatch, useSelector} from 'react-redux';
+import {signIn} from '../store/actions/auth';
 
-const LoginScreen = ({navigation}) => {
+const SignInScreen = ({navigation}) => {
+  const dispatch = useDispatch();
   const [pass, setPass] = useState('');
   const [email, setEmail] = useState('');
-  const signIn = () => {
-    auth()
-      .signInWithEmailAndPassword(email, pass)
-      .then(() => {})
-      .catch((error) => {
-        if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
-        }
-
-        if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
-        }
-
-        console.error(error);
-      });
+  const loading = useSelector((state) => state.auth.loading);
+  const err = useSelector((state) => state.auth.loginE);
+  const onPress = async () => {
+    dispatch(signIn(email, pass));
   };
   const {container, title, inputE, inputP, bottomBtn} = styles;
   return (
@@ -43,7 +33,11 @@ const LoginScreen = ({navigation}) => {
           onChange={(text) => setPass(text)}
         />
       </View>
-      <AppButton text={'Войти'} onPress={signIn} />
+      <AppButton
+        text={loading ? 'loading' : 'Войти'}
+        onPress={() => onPress()}
+      />
+      <AppText text={err} size={25} />
       <View style={bottomBtn}>
         <Icon.Button
           name={'arrow-right'}
@@ -76,4 +70,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-export default LoginScreen;
+export default SignInScreen;

@@ -8,6 +8,15 @@ const App = () => {
     <Provider store={store}>
       <AppNavigation />
     </Provider>
+    // <View
+    //   style={{
+    //     flex: 1,
+    //     alignItems: 'center',
+    //     justifyContent: 'center',
+    //     backgroundColor: THEME.MAIN_COLOR,
+    //   }}>
+    //   <ToggleStatusButton onPress={() => console.log('press')} status={true} />
+    // </View>
   );
 };
 

@@ -6,7 +6,8 @@ import React, {useEffect, useRef, useState} from 'react';
 import {
   AddDoorScreen,
   CreatePinCodeScreen,
-  LoginScreen,
+  DoorScreen,
+  SignInScreen,
   MainScreen,
   PinCodeScreen,
   SignUpScreen,
@@ -21,6 +22,7 @@ import {
   userSignOut,
 } from '../store/actions/auth';
 import auth from '@react-native-firebase/auth';
+import {setUserDoorsListener} from '../store/actions/doors';
 
 const MyTheme = {
   colors: {
@@ -38,6 +40,7 @@ export const AppNavigation = () => {
     setUser(newUser);
     if (newUser) {
       dispatch(userObj(newUser));
+      dispatch(setUserDoorsListener(newUser.uid));
     }
     if (initializing) {
       dispatch(loadPinCode());
@@ -82,6 +85,7 @@ export const AppNavigation = () => {
             }}>
             <Stack.Screen component={MainScreen} name="main" />
             <Stack.Screen component={AddDoorScreen} name="add" />
+            <Stack.Screen component={DoorScreen} name="door" />
           </Stack.Navigator>
         ) : pin_code === '' ? (
           <Stack.Navigator
@@ -107,7 +111,7 @@ export const AppNavigation = () => {
           screenOptions={{
             headerShown: false,
           }}>
-          <Stack.Screen name="login" component={LoginScreen} />
+          <Stack.Screen name="login" component={SignInScreen} />
           <Stack.Screen name="signup" component={SignUpScreen} />
         </Stack.Navigator>
       )}

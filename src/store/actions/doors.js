@@ -1,19 +1,29 @@
 import database from '@react-native-firebase/database';
 import {
-  GET_DOORS,
-  SET_DOOR_LISTENER,
-  SET_LOADING_DOORS,
-  SET_LOADING_USER_DOORS,
-  SET_USER_DOORS,
+  LOAD_DOORS,
+  DOOR_LISTENER,
+  LOADING_DOORS,
+  LOADING_USER_DOORS,
+  LOAD_USER_DOORS,
+  ADD_DOOR,
 } from '../types';
 import {parseSnapshotDoor, parseSnapshotDoors} from '../../constants';
 
 export const setUserDoor = (userId, name, doorId) => {
-  return async () => {
+  return async (dispatch) => {
+    dispatch({
+      type: LOADING_DOORS,
+      isLoading: true,
+    });
     database()
       .ref(`/users/${userId}/devices/${doorId}`)
       .set({name})
-      .then(() => console.log('set door'));
+      .then(() =>
+        dispatch({
+          type: ADD_DOOR,
+          error: '',
+        }),
+      );
   };
 };
 export const changeDoorStatus = (isLock, doorId) => {
@@ -36,33 +46,34 @@ export const changeDoorStatus = (isLock, doorId) => {
 export const setDoorListener = (doorId) => {
   return async (dispatch) => {
     dispatch({
-      type: SET_LOADING_DOORS,
-      payload: true,
+      type: LOADING_DOORS,
+      isLoading: true,
     });
     database()
       .ref(`/doors/${doorId}/`)
       .on('value', (snapshot) => {
-        let values = parseSnapshotDoor(snapshot, doorId);
+        let door = parseSnapshotDoor(snapshot, doorId);
         dispatch({
-          type: SET_DOOR_LISTENER,
-          payload: values,
+          type: DOOR_LISTENER,
+          door,
         });
       });
   };
 };
-export const GetDoors = () => {
+export const getDoors = () => {
   return async (dispatch) => {
     dispatch({
-      type: SET_LOADING_DOORS,
+      type: LOADING_DOORS,
       payload: true,
     });
-    database()
+    await database()
       .ref('/doors/')
-      .on('value', (snapshot) => {
-        let values = parseSnapshotDoors(snapshot);
+      .once('value', (snapshot) => {
+        let doors = parseSnapshotDoors(snapshot);
+        console.log('doooors', doors);
         dispatch({
-          type: GET_DOORS,
-          payload: values,
+          type: LOAD_DOORS,
+          doors,
         });
       });
   };
@@ -70,22 +81,22 @@ export const GetDoors = () => {
 export const setUserDoorsListener = (userId) => {
   return async (dispatch) => {
     dispatch({
-      type: SET_LOADING_USER_DOORS,
-      payload: true,
+      type: LOADING_USER_DOORS,
+      isLoading: true,
     });
     database()
       .ref(`/users/${userId}/devices/`)
       .on('value', (userSnapshot) => {
-        let values = [];
+        let doors = [];
         for (let key in userSnapshot.val()) {
-          values.push({
+          doors.push({
             key,
             name: userSnapshot.child(key).child('name').val(),
           });
         }
         dispatch({
-          type: SET_USER_DOORS,
-          payload: values,
+          type: LOAD_USER_DOORS,
+          doors,
         });
       });
   };

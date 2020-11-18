@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
 import {StyleSheet, TouchableWithoutFeedback} from 'react-native';
-import {THEME} from '../../theme';
-import {AppText} from './';
 import {Neomorph} from 'react-native-neomorph-shadows';
+import {AppText} from '../uikit';
+import {THEME} from '../../theme';
+import React, {useState} from 'react';
 
-const PinCodeButton = ({title, onPress}) => {
+const AppIconButton = ({title, onPress, size = 50}) => {
   const {button} = styles;
   const [btnState, setBtnState] = useState(false);
   const onPressHandler = (state) => {
@@ -17,7 +17,7 @@ const PinCodeButton = ({title, onPress}) => {
     <TouchableWithoutFeedback
       onPressIn={() => onPressHandler(true)}
       onPressOut={() => onPressHandler(false)}>
-      <Neomorph style={button} inner={btnState}>
+      <Neomorph style={{...button, width: size, height: size}} inner={btnState}>
         <AppText
           text={title}
           size={26}
@@ -33,10 +33,8 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     borderRadius: 15,
     backgroundColor: THEME.MAIN_COLOR,
-    width: 65,
-    height: 65,
     alignItems: 'center',
     justifyContent: 'center',
   },
 });
-export default PinCodeButton;
+export default AppIconButton;

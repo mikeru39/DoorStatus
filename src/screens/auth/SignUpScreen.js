@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import {View, StyleSheet, StatusBar} from 'react-native';
-import {AppTextInput, AppText, AppButton, AppBar} from '../components/uikit/';
-import {THEME} from '../theme';
+import {AppTextInput, AppText, AppBar} from '../../components/uikit';
+import {AppButton} from '../../components/buttons';
+import {THEME} from '../../theme';
 import {useDispatch, useSelector} from 'react-redux';
-import {signUp} from '../store/actions/auth';
+import {clearError, signUp} from '../../store/actions/auth';
 
 const SignUpScreen = ({navigation}) => {
   const {container, title, inputE, inputP, btn} = styles;
@@ -12,7 +13,7 @@ const SignUpScreen = ({navigation}) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const loading = useSelector((state) => state.auth.loading);
-  const err = useSelector((state) => state.auth.signUpE);
+  const err = useSelector((state) => state.auth.error);
   const dispatch = useDispatch();
   const onPress = async () => {
     dispatch(signUp(pass1, pass2, name, email));
@@ -22,7 +23,10 @@ const SignUpScreen = ({navigation}) => {
       <AppBar
         text={'Регистрация'}
         leftBtnName={'arrow-back'}
-        leftBtnOnPress={() => navigation.goBack()}
+        leftBtnOnPress={() => {
+          dispatch(clearError());
+          navigation.goBack();
+        }}
       />
       <View style={title}>
         <AppTextInput

@@ -1,24 +1,32 @@
-import React, {useLayoutEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StatusBar, StyleSheet, View} from 'react-native';
-import {THEME} from '../theme';
-import {AppBar, AppButton, AppText, AppTextInput} from '../components/uikit/';
+import {THEME} from '../../theme';
+import {AppBar, AppTextInput} from '../../components/uikit';
+import {AppButton} from '../../components/buttons';
 import {useDispatch, useSelector} from 'react-redux';
-import {setUserDoor} from '../store/actions/doors';
+import {setUserDoor} from '../../store/actions/doors';
 
 const AddDoorScreen = ({navigation}) => {
   const {container, btn, inputId, inputP, inputs} = styles;
   const user = useSelector((state) => state.auth.user);
-  const doors = useSelector((state) => state.doors.doors);
+  const doors = useSelector((state) => state.doors.allDoors);
   const dispatch = useDispatch();
   const user_doors = useSelector((state) => state.doors.user_doors);
+  const loading = useSelector((state) => state.doors.loadingDoor);
   const [id, setId] = useState('');
+  const [prevLoading, setLoading] = useState('');
   const [pass, setPass] = useState('');
-  const addDoor = () => {
-    console.log(user_doors);
+  useEffect(() => {
+    if (!loading && prevLoading) {
+      navigation.navigate('doors');
+    } else {
+      setLoading(loading);
+    }
+  }, [loading, prevLoading, navigation]);
+  const addDoor = async () => {
     let isAdded = false;
     for (let i in user_doors) {
       if (user_doors[i].key === id) {
-        console.log('Эта дверь уже добавлена!');
         isAdded = true;
         break;
       } else {
@@ -26,12 +34,11 @@ const AddDoorScreen = ({navigation}) => {
       }
     }
     if (!isAdded) {
-      console.log(doors);
       for (let item in doors) {
         if (doors[item].key === id) {
           if (pass === doors[item].pass) {
+            console.log('add');
             dispatch(setUserDoor(user.uid, 'house', id));
-            navigation.navigate('main');
           }
         }
       }
@@ -59,7 +66,10 @@ const AddDoorScreen = ({navigation}) => {
         />
       </View>
       <View style={btn}>
-        <AppButton text={'Добавить'} onPress={addDoor} />
+        <AppButton
+          text={loading ? 'loading' : 'Добавить'}
+          onPress={() => addDoor()}
+        />
       </View>
 
       <StatusBar backgroundColor={THEME.MAIN_COLOR} />

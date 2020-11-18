@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {TouchableWithoutFeedback, View, StyleSheet} from 'react-native';
 import {THEME} from '../../theme';
-import {AppText} from './';
+import {AppText} from '../uikit';
 import {Neomorph} from 'react-native-neomorph-shadows';
 
 const AppButton = ({onPress, text}) => {

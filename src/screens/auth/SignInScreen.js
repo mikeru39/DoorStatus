@@ -1,17 +1,18 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {View, StyleSheet, StatusBar} from 'react-native';
-import {AppTextInput, AppText, AppButton, AppBar} from '../components/uikit/';
-import {THEME} from '../theme';
+import {AppTextInput, AppText, AppBar} from '../../components/uikit';
+import {AppButton} from '../../components/buttons';
+import {THEME} from '../../theme';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch, useSelector} from 'react-redux';
-import {signIn} from '../store/actions/auth';
+import {clearError, signIn} from '../../store/actions/auth';
 
 const SignInScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const [pass, setPass] = useState('');
   const [email, setEmail] = useState('');
   const loading = useSelector((state) => state.auth.loading);
-  const err = useSelector((state) => state.auth.loginE);
+  const err = useSelector((state) => state.auth.error);
   const onPress = async () => {
     dispatch(signIn(email, pass));
   };
@@ -44,7 +45,10 @@ const SignInScreen = ({navigation}) => {
           backgroundColor={THEME.MAIN_COLOR}
           color={THEME.TEXT_MAIN_COLOR}
           size={24}
-          onPress={() => navigation.navigate('signup')}>
+          onPress={() => {
+            dispatch(clearError());
+            navigation.navigate('signUp');
+          }}>
           <AppText text={'Регистрация'} size={18} />
         </Icon.Button>
       </View>

@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {StatusBar, View, StyleSheet} from 'react-native';
-import {PinCode, NumberPad} from '../components/for_pin_code_creen/';
-import {THEME} from '../theme';
+import {PinCode, NumberPad} from '../../components/cards';
+import {THEME} from '../../theme';
 import {useDispatch, useSelector} from 'react-redux';
-import {authToken} from '../store/actions/auth';
+import {authToken} from '../../store/actions/auth';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Neomorph} from 'react-native-neomorph-shadows';
-import {AppText} from '../components/uikit';
+import {AppText} from '../../components/uikit';
 const PinCodeScreen = () => {
   const user = useSelector((state) => state.auth.username);
   const pinCode = useSelector((state) => state.auth.pinCode);

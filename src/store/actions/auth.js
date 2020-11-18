@@ -3,25 +3,26 @@ import {
   LOAD_PIN_CODE,
   SET_USER,
   SET_PIN_CODE,
-  USER_SIGN_OUT,
+  SIGN_OUT,
   SIGN_IN,
-  SET_LOADING,
+  LOADING,
   SIGN_UP,
+  CLEAR_ERROR,
 } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import {getError} from '../../constants';
 
-export const authToken = (status) => {
+export const authToken = (auth_token) => {
   return {
     type: AUTH_TOKEN,
-    payload: status,
+    auth_token,
   };
 };
 export const userObj = (user) => {
   return {
     type: SET_USER,
-    payload: user,
+    user,
   };
 };
 export const setPinCode = (pinCode) => {
@@ -29,18 +30,15 @@ export const setPinCode = (pinCode) => {
     await AsyncStorage.setItem('@pinCode', pinCode);
     dispatch({
       type: SET_PIN_CODE,
-      payload: pinCode,
+      pinCode,
     });
   };
-};
-export const setLoading = (state) => {
-  return {type: SET_LOADING, payload: state};
 };
 
 export const signUp = (pass1, pass2, name, email) => {
   return async (dispatch) => {
     dispatch({
-      type: SET_LOADING,
+      type: LOADING,
       payload: true,
     });
     if (pass1 && pass2 && name && email) {
@@ -51,63 +49,39 @@ export const signUp = (pass1, pass2, name, email) => {
             auth().currentUser.updateProfile({displayName: name});
             dispatch({
               type: SIGN_UP,
-              payload: '',
+              error: '',
             });
           })
           .catch((error) => {
             dispatch({
               type: SIGN_UP,
-              payload: getError(error),
+              error: getError(error),
             });
-
-            // if (error.code === 'auth/email-already-in-use') {
-            //   dispatch({
-            //     type: SIGN_UP,
-            //     payload: {
-            //       error: 'Этот Email уже занят!',
-            //       crash: true,
-            //     },
-            //   });
-            // }
-            //
-            // if (error.code === 'auth/invalid-email') {
-            //   dispatch({
-            //     type: SIGN_UP,
-            //     payload: {
-            //       error: 'Этот Email недействителен!',
-            //       crash: true,
-            //     },
-            //   });
-            // }
-            // if (error.code === 'auth/weak-password') {
-            //   dispatch({
-            //     type: SIGN_UP,
-            //     payload: {
-            //       error: 'Пароль должен содержать больше 6 символов!',
-            //       crash: true,
-            //     },
-            //   });
-            // }
           });
       } else {
         dispatch({
           type: SIGN_UP,
-          payload: 'Пароли не совпадают',
+          error: 'Пароли не совпадают',
         });
       }
     } else {
       dispatch({
         type: SIGN_UP,
-        payload: 'Заполните все поля',
+        error: 'Заполните все поля',
       });
     }
+  };
+};
+export const clearError = () => {
+  return {
+    type: CLEAR_ERROR,
   };
 };
 
 export const signIn = (email, pass) => {
   return async (dispatch) => {
     dispatch({
-      type: SET_LOADING,
+      type: LOADING,
       payload: true,
     });
 
@@ -118,19 +92,19 @@ export const signIn = (email, pass) => {
           console.log('user sign in');
           dispatch({
             type: SIGN_IN,
-            payload: '',
+            error: '',
           });
         })
         .catch((error) => {
           dispatch({
             type: SIGN_IN,
-            payload: getError(error),
+            error: getError(error),
           });
         });
     } else {
       dispatch({
         type: SIGN_IN,
-        payload: 'Заполните все поля',
+        error: 'Заполните все поля',
       });
     }
   };
@@ -142,12 +116,12 @@ export const loadPinCode = () => {
     if (pinCode !== null) {
       dispatch({
         type: LOAD_PIN_CODE,
-        payload: pinCode,
+        pinCode,
       });
     } else {
       dispatch({
         type: LOAD_PIN_CODE,
-        payload: '',
+        pinCode: '',
       });
     }
   };
@@ -161,18 +135,7 @@ export const userSignOut = () => {
       .then(() => {
         console.log('user sign out!');
         dispatch({
-          type: USER_SIGN_OUT,
-        });
-      });
-  };
-};
-export const login = (pass, email) => {
-  return async (dispatch) => {
-    await auth()
-      .signInWithEmailAndPassword(email, pass)
-      .then(() => {
-        dispatch({
-          type: USER_SIGN_OUT,
+          type: SIGN_OUT,
         });
       });
   };

@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import {AppText} from './uikit';
+import {AppText} from '../uikit';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const LogCard = ({time, status, device}) => {

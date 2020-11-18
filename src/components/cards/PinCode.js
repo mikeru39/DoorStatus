@@ -1,13 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Dimensions} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {Indicator} from '../uikit/';
-import {Neomorph} from 'react-native-neomorph-shadows';
-import {THEME} from '../../theme';
-const windowWidth = Dimensions.get('window').width;
 
 const PinCode = ({len, color}) => {
   const [status, setStatus] = useState([false, false, false, false, false]);
-  const {container, grid} = styles;
+  const {grid} = styles;
   useEffect(() => {
     if (len > 0) {
       let i = 0;
@@ -32,14 +29,6 @@ const PinCode = ({len, color}) => {
   );
 };
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    width: 240,
-    height: 60,
-    backgroundColor: THEME.MAIN_COLOR,
-    shadowRadius: 7,
-    borderRadius: 30,
-  },
   grid: {
     flex: 1,
     width: '60%',

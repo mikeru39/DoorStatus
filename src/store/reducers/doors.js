@@ -1,81 +1,78 @@
 import {
-  SET_USER_DOORS,
-  SET_DOOR_LISTENER,
-  SET_LOADING_USER_DOORS,
-  SET_LOADING_DOORS,
+  LOAD_USER_DOORS,
+  DOOR_LISTENER,
+  LOADING_USER_DOORS,
+  LOADING_DOORS,
+  LOAD_DOORS,
+  ADD_DOOR,
 } from '../types';
+import {findIndexByProperty} from '../../constants';
 
 const initialState = {
   doors: [],
+  allDoors: [],
   user_doors: [],
-  loadingU: true,
-  loadingD: true,
+  error: null,
+  loadingUserDoors: true,
+  loadingDoor: [],
+  loadingAllDoors: true,
 };
-function findIndexByProperty(data, value) {
-  for (let i = 0; i < data.length; i++) {
-    console.log('data', value);
-    console.log('data', data);
-    if (data[i].key === value) {
-      return i;
-    }
-  }
-  return -1;
-}
-export const doorsReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case SET_LOADING_USER_DOORS:
-      return {
-        ...state,
-        loadingU: action.payload,
-      };
-    case SET_LOADING_DOORS:
-      return {
-        ...state,
-        loadingD: action.payload,
-      };
-    case SET_USER_DOORS:
-      return {
-        ...state,
-        loadingU: false,
-        user_doors: action.payload,
-      };
-    case SET_DOOR_LISTENER:
-      console.log('SET_DOOR_LISTENER', state.doors);
-      if (state.doors !== []) {
-        const newDoorIndex = findIndexByProperty(
-          state.doors,
-          action.payload.key,
-        );
-        if (newDoorIndex > -1) {
-          return {
-            ...state,
-            loadingD: false,
-            doors: state.doors.map((item) => {
-              if (item.key === action.payload.key) {
-                item.status = action.payload.status;
-                item.isLock = action.payload.isLock;
-                item.log = action.payload.log;
-                item.pass = action.payload.pass;
-              }
-              return item;
-            }),
-          };
-        } else {
-          return {
-            ...state,
-            loadingD: false,
-            doors: [...state.doors, action.payload],
-          };
-        }
+const handlers = {
+  [LOAD_DOORS]: (state, {doors}) => ({
+    ...state,
+    allDoors: doors,
+    loadingAllDoors: false,
+  }),
+  [ADD_DOOR]: (state, {error}) => ({...state, loadingDoor: false, error}),
+  [DOOR_LISTENER]: (state, {door}) => {
+    if (state.doors !== []) {
+      const newDoorIndex = findIndexByProperty(state.doors, door.key);
+      if (newDoorIndex > -1) {
+        return {
+          ...state,
+          loadingDoor: false,
+          doors: state.doors.map((item) => {
+            if (item.key === door.key) {
+              item.status = door.status;
+              item.isLock = door.isLock;
+              item.log = door.log;
+              item.pass = door.pass;
+            }
+            return item;
+          }),
+        };
       } else {
         return {
           ...state,
-          loadingD: false,
-          doors: [...state.doors, action.payload],
+          loadingDoor: false,
+          doors: [...state.doors, door],
         };
       }
+    } else {
+      return {
+        ...state,
+        loadingDoor: false,
+        doors: [...state.doors, door],
+      };
+    }
+  },
+  [LOAD_USER_DOORS]: (state, {doors}) => ({
+    ...state,
+    loadingUserDoors: false,
+    user_doors: doors,
+  }),
+  [LOADING_DOORS]: (state, {isLoading}) => ({
+    ...state,
+    loadingDoor: isLoading,
+  }),
+  [LOADING_USER_DOORS]: (state, {isLoading}) => ({
+    ...state,
+    loadingUserDoors: isLoading,
+  }),
+  DEFAULT: (state) => state,
+};
 
-    default:
-      return state;
-  }
+export const doorsReducer = (state = initialState, action) => {
+  const handler = handlers[action.type] || handlers.DEFAULT;
+  return handler(state, action);
 };

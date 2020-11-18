@@ -1,10 +1,9 @@
 import React from 'react';
-import {Dimensions, FlatList, View} from 'react-native';
-import {THEME} from '../theme';
-import {AppText} from './uikit';
+import {FlatList, View, ScrollView} from 'react-native';
+import {THEME} from '../../theme';
+import {AppText} from '../uikit';
 import LogCard from './LogCard';
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+import {winW, winH} from '../../constants';
 class BottomSheetContent extends React.Component {
   static navigationOptions = {title: null};
 
@@ -31,8 +30,8 @@ class BottomSheetContent extends React.Component {
           elevation: 20,
           marginRight: 'auto',
           marginLeft: 'auto',
-          width: windowWidth * 0.8,
-          height: windowHeight * 0.5,
+          width: winW * 0.8,
+          height: winH * 0.5,
           backgroundColor: THEME.MAIN_COLOR,
         }}>
         <View

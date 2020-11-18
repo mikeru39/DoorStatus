@@ -3,15 +3,13 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import React, {useEffect, useRef, useState} from 'react';
 
+import {AddDoorScreen, DoorScreen, UserDoors} from '../screens/door';
 import {
-  AddDoorScreen,
   CreatePinCodeScreen,
-  DoorScreen,
-  SignInScreen,
-  MainScreen,
   PinCodeScreen,
   SignUpScreen,
-} from '../screens/';
+  SignInScreen,
+} from '../screens/auth';
 import {THEME} from '../theme';
 import {AppState} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
@@ -31,7 +29,6 @@ const MyTheme = {
 };
 
 const Stack = createStackNavigator();
-
 export const AppNavigation = () => {
   const dispatch = useDispatch();
   const [initializing, setInitializing] = useState(true);
@@ -76,45 +73,33 @@ export const AppNavigation = () => {
   const auth_token = useSelector((state) => state.auth.auth_token);
   return (
     <NavigationContainer theme={MyTheme}>
-      {user ? (
-        auth_token ? (
-          <Stack.Navigator
-            initialRouteName="main"
-            screenOptions={{
-              headerShown: false,
-            }}>
-            <Stack.Screen component={MainScreen} name="main" />
-            <Stack.Screen component={AddDoorScreen} name="add" />
-            <Stack.Screen component={DoorScreen} name="door" />
-          </Stack.Navigator>
-        ) : pin_code === '' ? (
-          <Stack.Navigator
-            screenOptions={{
-              headerShown: false,
-            }}>
+      <Stack.Navigator
+        initialRouteName={user ? 'doors' : 'signIn'}
+        screenOptions={{
+          headerShown: false,
+        }}>
+        {user ? (
+          auth_token ? (
+            <>
+              <Stack.Screen component={UserDoors} name="doors" />
+              <Stack.Screen component={AddDoorScreen} name="add" />
+              <Stack.Screen component={DoorScreen} name="door" />
+            </>
+          ) : pin_code === '' ? (
             <Stack.Screen
               name="createPinCode"
               component={CreatePinCodeScreen}
             />
-          </Stack.Navigator>
-        ) : (
-          <Stack.Navigator
-            screenOptions={{
-              headerShown: false,
-            }}>
+          ) : (
             <Stack.Screen component={PinCodeScreen} name="pinCode" />
-          </Stack.Navigator>
-        )
-      ) : (
-        <Stack.Navigator
-          initialRouteName="login"
-          screenOptions={{
-            headerShown: false,
-          }}>
-          <Stack.Screen name="login" component={SignInScreen} />
-          <Stack.Screen name="signup" component={SignUpScreen} />
-        </Stack.Navigator>
-      )}
+          )
+        ) : (
+          <>
+            <Stack.Screen name="signIn" component={SignInScreen} />
+            <Stack.Screen name="signUp" component={SignUpScreen} />
+          </>
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };

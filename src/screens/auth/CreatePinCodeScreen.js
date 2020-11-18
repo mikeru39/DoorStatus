@@ -1,15 +1,14 @@
 import React, {useState} from 'react';
 import {StatusBar, View, StyleSheet} from 'react-native';
-import {PinCode, NumberPad} from '../components/for_pin_code_creen/';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {THEME} from '../theme';
-import {useDispatch, useSelector} from 'react-redux';
+import {PinCode, NumberPad} from '../../components/cards';
+import {THEME} from '../../theme';
+import {useDispatch} from 'react-redux';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Neomorph} from 'react-native-neomorph-shadows';
-import {AppText} from '../components/uikit';
-import {authToken, setPinCode} from '../store/actions/auth';
+import {AppText} from '../../components/uikit';
+import {setPinCode} from '../../store/actions/auth';
 
-const CreatePinCodeScreen = ({navigation}) => {
+const CreatePinCodeScreen = () => {
   const [value, onChangeText] = useState('');
   const main_color = THEME.ACTIVE_COLOR;
   const [statusColor, setColor] = useState(main_color);
@@ -27,6 +26,7 @@ const CreatePinCodeScreen = ({navigation}) => {
         if (len < 5) {
           onChangeText(newS);
           if (count === 1) {
+            setTitle('Создайте пин-код');
             if (len === 4) {
               setPass1(newS);
               setTimeout(function () {
@@ -35,6 +35,7 @@ const CreatePinCodeScreen = ({navigation}) => {
               }, 1000);
             }
           } else {
+            setTitle('Повторите пин-код');
             if (len === 4) {
               setPass2(newS);
               if (pass1 !== newS) {

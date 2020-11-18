@@ -1,13 +1,13 @@
 import React from 'react';
-import {View, StyleSheet, StatusBar, FlatList, Dimensions} from 'react-native';
-import {AppText, AppBar} from '../components/uikit/';
-import {THEME} from '../theme';
-import ToggleStatusButton from '../components/uikit/ToggleStatusButton';
+import {View, StyleSheet, StatusBar} from 'react-native';
+import {AppText, AppBar} from '../../components/uikit';
+import {THEME} from '../../theme';
+import ToggleStatusButton from '../../components/buttons/ToggleStatusButton';
 import BottomSheet from 'reanimated-bottom-sheet';
 import {useDispatch, useSelector} from 'react-redux';
-import {changeDoorStatus} from '../store/actions/doors';
-import BottomSheetContent from '../components/BottomSheetContent';
-const windowHeight = Dimensions.get('window').height;
+import {changeDoorStatus} from '../../store/actions/doors';
+import BottomSheetContent from '../../components/cards/BottomSheetContent';
+import {winH} from '../../constants';
 const DoorScreen = ({navigation, route}) => {
   const {key, name} = route.params?.door;
   const dispatch = useDispatch();
@@ -42,8 +42,10 @@ const DoorScreen = ({navigation, route}) => {
         <AppText text={'Дверь закрыта'} />
       </View>
       <BottomSheet
+        enabledInnerScrolling={true}
+        // enabledContentGestureInteraction={false}
         ref={sheetRef}
-        snapPoints={[80, windowHeight * 0.5 + 10]}
+        snapPoints={[80, winH * 0.5 + 10]}
         renderContent={renderContent}
       />
       <StatusBar backgroundColor={THEME.MAIN_COLOR} />

@@ -1,17 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {StatusBar, View, FlatList} from 'react-native';
-import {THEME} from '../theme';
-import DoorCard from '../components/DoorCard';
-import {AppBar, AppText} from '../components/uikit';
+import {THEME} from '../../theme';
+import DoorCard from '../../components/cards/DoorCard';
+import {AppBar, AppText} from '../../components/uikit';
 import {useDispatch, useSelector} from 'react-redux';
-import {userSignOut} from '../store/actions/auth';
-import {setDoorListener, setUserDoorsListener} from '../store/actions/doors';
+import {userSignOut} from '../../store/actions/auth';
+import {getDoors, setUserDoorsListener} from '../../store/actions/doors';
 
-const MainScreen = ({navigation}) => {
-  const userId = useSelector((state) => state.auth.user.uid);
+const UserDoors = ({navigation}) => {
   const doors = useSelector((state) => state.doors.user_doors);
-  const loadingU = useSelector((state) => state.doors.loadingU);
-  // console.log(doors);
+  const loading = useSelector((state) => state.doors.loadingUserDoors);
   const dispatch = useDispatch();
   const onPress = (id) => {
     const door = doors.filter((i) => i.key === id)[0];
@@ -19,6 +17,7 @@ const MainScreen = ({navigation}) => {
       door,
     });
   };
+  console.log(doors);
   return (
     <View style={{flex: 1}}>
       <AppBar
@@ -28,9 +27,12 @@ const MainScreen = ({navigation}) => {
           dispatch(userSignOut());
         }}
         rightBtnName={'add-outline'}
-        rightBtnOnPress={() => navigation.navigate('add')}
+        rightBtnOnPress={() => {
+          dispatch(getDoors());
+          navigation.navigate('add');
+        }}
       />
-      {loadingU ? (
+      {loading ? (
         <AppText text={'loading'} size={20} />
       ) : (
         <FlatList
@@ -45,7 +47,9 @@ const MainScreen = ({navigation}) => {
               name={item.item.name}
             />
           )}
-          keyExtractor={(item) => item.key}
+          keyExtractor={(item) => {
+            return item.key;
+          }}
         />
       )}
       <StatusBar backgroundColor={THEME.MAIN_COLOR} />
@@ -53,4 +57,4 @@ const MainScreen = ({navigation}) => {
   );
 };
 
-export default MainScreen;
+export default UserDoors;

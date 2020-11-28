@@ -9,10 +9,16 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {THEME} from '../../theme';
-import {Neomorph} from 'react-native-neomorph-shadows';
+import {winW} from '../../constants';
 
-const AppTextInput = ({type = 'email', placeHolder, style, onChange}) => {
-  const {textInput, input, button} = styles;
+const AppTextInput = ({
+  type = 'email',
+  iconName,
+  placeHolder,
+  style,
+  onChange,
+}) => {
+  const {textInput, input, icon, button, buttonLayout} = styles;
   const [status, setStatus] = useState(true);
   const [color, setColor] = useState(THEME.NO_ACTIVE_COLOR);
   const changeEye = () => {
@@ -21,25 +27,29 @@ const AppTextInput = ({type = 'email', placeHolder, style, onChange}) => {
   const activeInput = (bool) => {
     setColor(bool ? THEME.ACTIVE_COLOR : THEME.NO_ACTIVE_COLOR);
   };
-  const Wrapper =
+  const OnClick =
     Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
-  switch (type) {
-    case 'pass':
-      return (
-        <Neomorph inner style={{...textInput, shadowRadius: 5, ...style}}>
-          <Ionicons name={'lock-closed-outline'} size={24} color={color} />
-          <TextInput
-            secureTextEntry={status}
-            style={input}
-            autoCapitalize="none"
-            placeholder={placeHolder}
-            placeholderTextColor={color}
-            selectionColor={color}
-            onChangeText={onChange}
-            onEndEditing={() => activeInput(false)}
-            onFocus={() => activeInput(true)}
-          />
-          <Wrapper
+
+  return (
+    <View style={{...textInput, borderColor: color, ...style}}>
+      <View style={icon}>
+        <Ionicons name={iconName} size={24} color={color} />
+      </View>
+      <TextInput
+        secureTextEntry={type === 'pass' ? status : false}
+        style={input}
+        placeholder={placeHolder}
+        autoCapitalize="none"
+        keyboardType={type === 'email' ? 'email-address' : 'default'}
+        placeholderTextColor={color}
+        onChangeText={onChange}
+        selectionColor={THEME.MAIN_COLOR}
+        onEndEditing={() => activeInput(false)}
+        onFocus={() => activeInput(true)}
+      />
+      {type === 'pass' ? (
+        <View style={buttonLayout}>
+          <OnClick
             background={TouchableNativeFeedback.Ripple(
               THEME.RIPPLE_COLOR,
               true,
@@ -47,75 +57,49 @@ const AppTextInput = ({type = 'email', placeHolder, style, onChange}) => {
             onPress={changeEye}>
             <View style={button}>
               <Ionicons
-                name={status ? 'eye-outline' : 'eye-off-outline'}
+                name={status ? 'eye' : 'eye-off'}
                 size={24}
                 color={color}
               />
             </View>
-          </Wrapper>
-        </Neomorph>
-      );
-    case 'email':
-      return (
-        <Neomorph inner style={{...textInput, shadowRadius: 5, ...style}}>
-          <Ionicons name={'mail-outline'} size={24} color={color} />
-          <TextInput
-            style={input}
-            placeholder={placeHolder}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            placeholderTextColor={color}
-            onChangeText={onChange}
-            selectionColor={THEME.MAIN_COLOR}
-            onEndEditing={() => activeInput(false)}
-            onFocus={() => activeInput(true)}
-          />
-        </Neomorph>
-      );
-    case 'name':
-      return (
-        <Neomorph inner style={{...textInput, shadowRadius: 5, ...style}}>
-          <Ionicons name={'person-outline'} size={24} color={color} />
-          <TextInput
-            style={input}
-            placeholder={placeHolder}
-            autoCapitalize="none"
-            placeholderTextColor={color}
-            onChangeText={onChange}
-            selectionColor={THEME.MAIN_COLOR}
-            onEndEditing={() => activeInput(false)}
-            onFocus={() => activeInput(true)}
-          />
-        </Neomorph>
-      );
-  }
+          </OnClick>
+        </View>
+      ) : (
+        <></>
+      )}
+    </View>
+  );
 };
 const styles = StyleSheet.create({
   textInput: {
-    paddingLeft: 20,
-    paddingRight: 20,
+    borderWidth: 2,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: THEME.MAIN_COLOR,
-    width: 280,
+    width: winW * 0.8,
     height: 56,
     borderRadius: 15,
   },
+  icon: {flex: 1, padding: 12},
   input: {
-    marginLeft: 5,
-    width: 185,
-    fontSize: 15,
-    color: THEME.ACTIVE_COLOR,
-    height: 48,
+    flex: 10,
+    fontSize: 18,
+    color: THEME.TEXT_MAIN_COLOR,
     fontFamily: 'Ubuntu-Regular',
+  },
+  buttonLayout: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // backgroundColor: 'white',
+    padding: 12,
   },
   button: {
     borderRadius: 12,
-    marginLeft: 'auto',
     height: 24,
+    width: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    width: 24,
   },
 });
 export default AppTextInput;

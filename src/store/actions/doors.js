@@ -78,6 +78,12 @@ export const getDoors = () => {
       });
   };
 };
+export const setLoadingUserDoors = (state) => {
+  return {
+    type: LOADING_USER_DOORS,
+    isLoading: true,
+  };
+};
 export const setUserDoorsListener = (userId) => {
   return async (dispatch) => {
     dispatch({

@@ -20,6 +20,17 @@ export const getError = (err) => {
       return err;
   }
 };
+export function unique(arr) {
+  let result = [];
+
+  for (let str of arr) {
+    if (!result.includes(str)) {
+      result.push(str);
+    }
+  }
+
+  return result;
+}
 export const findIndexByProperty = (data, value) => {
   for (let i = 0; i < data.length; i++) {
     if (data[i].key === value) {

@@ -5,19 +5,18 @@ import {AppText} from '../uikit';
 import LogCard from './LogCard';
 import {winW, winH} from '../../constants';
 class BottomSheetContent extends React.Component {
-  static navigationOptions = {title: null};
-
   constructor(props) {
     super(props);
     this.state = {log: props.log};
   }
 
-  componentDidMount() {}
-
-  componentDidUpdate(prevProps) {
-    if (this.props.log !== this.state.log && this.props.log !== null) {
-      this.setState({log: this.props.log});
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    if (nextProps.log !== this.state.log && nextProps.log !== null) {
+      this.setState({log: nextProps.log});
+      console.log(nextProps.log);
+      return true;
     }
+    return false;
   }
 
   render() {

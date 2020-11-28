@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
 import {View, StyleSheet, TouchableWithoutFeedback} from 'react-native';
-import {AppText} from '../uikit';
+import {AppText, Loading} from '../uikit';
 import {THEME} from '../../theme';
-import {Neomorph} from 'react-native-neomorph-shadows';
-import LinearGradient from 'react-native-linear-gradient';
-import {getDoors, setDoorListener} from '../../store/actions/doors';
 import {winW} from '../../constants';
+import database from '@react-native-firebase/database';
 import {connect} from 'react-redux';
+import {setDoorListener} from '../../store/actions/doors';
 
 class DoorCard extends Component {
   constructor(props) {
@@ -18,29 +17,31 @@ class DoorCard extends Component {
       key: props.id,
     };
   }
-
   static getDerivedStateFromProps(props, state) {
-    const door = props.doors.find((item) => item.key === state.key);
-    if (door !== state.door) {
+    if (props.door !== state.door) {
       return {
-        door: door,
+        door: props.door,
       };
     }
     return null;
   }
+
+  componentWillUnmount() {
+    database().ref(`doors/${this.state.key}`).off('value');
+  }
+  onPress = async () => {
+    if (this.state.door !== undefined) {
+      this.props.onPress({key: this.state.key, name: this.state.name});
+    }
+  };
   render() {
     const {wrap, card, title, status, statuses} = styles;
     const door = this.state.door;
     return (
-      <Neomorph style={card}>
-        {!this.props.loading && door !== undefined ? (
-          <TouchableWithoutFeedback
-            onPress={() => this.props.onPress(this.state.key)}>
-            <LinearGradient
-              start={{x: 0.0, y: 0.0}}
-              end={{x: 1, y: 1}}
-              colors={[THEME.MAIN_COLOR, THEME.DOP_MAIN_COLOR]}
-              style={styles.gradient}>
+      <TouchableWithoutFeedback onPress={() => this.onPress()}>
+        <View style={card}>
+          {door !== undefined ? (
+            <>
               <View style={title}>
                 <AppText text={this.state.name} size={24} />
               </View>
@@ -68,45 +69,40 @@ class DoorCard extends Component {
                   </View>
                 </View>
               </View>
-            </LinearGradient>
-          </TouchableWithoutFeedback>
-        ) : (
-          <View
-            style={{
-              flex: 1,
-              width: '100%',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <AppText text={'loading'} size={20} />
-          </View>
-        )}
-      </Neomorph>
+            </>
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                width: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Loading size={'large'} />
+            </View>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 }
-
-const mapStateToProps = (state) => {
-  return {
-    doors: state.doors.doors,
-    loading: state.doors.loadingDoor,
-  };
-};
+const mapStateToProps = (state, ownProps) => ({
+  door: state.doors.doors.find((item) => item.key === ownProps.id),
+});
 const mapDispatchToProps = {
   setDoorListener,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(DoorCard);
 
 const styles = StyleSheet.create({
-  gradient: {borderRadius: 25, width: winW * 0.8, height: '100%', padding: 20},
   card: {
+    padding: 20,
     marginBottom: 25,
     marginTop: 25,
     height: 200,
     width: winW * 0.8,
-    shadowRadius: 7,
     alignSelf: 'center',
-    backgroundColor: THEME.MAIN_COLOR,
+    backgroundColor: 'rgba(27, 31, 38, 0.7)',
     borderRadius: 25,
     alignItems: 'flex-start',
     marginRight: 'auto',

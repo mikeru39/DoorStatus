@@ -1,19 +1,24 @@
 import React, {useEffect, useState} from 'react';
-import {StatusBar, View, StyleSheet} from 'react-native';
+import {
+  StatusBar,
+  View,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import {PinCode, NumberPad} from '../../components/cards';
 import {THEME} from '../../theme';
 import {useDispatch, useSelector} from 'react-redux';
 import {authToken} from '../../store/actions/auth';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {Neomorph} from 'react-native-neomorph-shadows';
 import {AppText} from '../../components/uikit';
 const PinCodeScreen = () => {
   const user = useSelector((state) => state.auth.username);
   const pinCode = useSelector((state) => state.auth.pinCode);
   const [value, onChangeText] = useState('');
-  const main_color = THEME.ACTIVE_COLOR;
+  const main_color = THEME.TEXT_MAIN_COLOR;
   const [statusColor, setColor] = useState(main_color);
   const dispatch = useDispatch();
+
   const onPress = (id) => {
     const s = value.toString();
     const len = s.length;
@@ -50,10 +55,9 @@ const PinCodeScreen = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <Neomorph
+        <View
           style={{
-            backgroundColor: THEME.MAIN_COLOR,
-            shadowRadius: 7,
+            backgroundColor: 'rgba(27, 31, 38, 0.7)',
             height: 105,
             width: 100,
             borderRadius: 45,
@@ -66,9 +70,9 @@ const PinCodeScreen = () => {
           <Ionicons
             name={'person-outline'}
             size={65}
-            color={THEME.ACTIVE_COLOR}
+            color={THEME.TEXT_MAIN_COLOR}
           />
-        </Neomorph>
+        </View>
         <AppText text={user} color={THEME.TEXT_MAIN_COLOR} isBold size={18} />
       </View>
       <View style={grid}>

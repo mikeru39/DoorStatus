@@ -1,5 +1,5 @@
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator, TransitionSpecs} from '@react-navigation/stack';
 
 import React, {useEffect, useRef, useState} from 'react';
 
@@ -21,14 +21,16 @@ import {
 } from '../store/actions/auth';
 import auth from '@react-native-firebase/auth';
 import {setUserDoorsListener} from '../store/actions/doors';
+import HeaderButtons from '../components/uikit/HeaderButtons';
+import ChangeWifiScreen from '../screens/door/ChangeWifiScreen';
 
 const MyTheme = {
   colors: {
     background: THEME.MAIN_COLOR,
   },
 };
-
-const Stack = createStackNavigator();
+const AuthStack = createStackNavigator();
+const DoorStack = createStackNavigator();
 export const AppNavigation = () => {
   const dispatch = useDispatch();
   const [initializing, setInitializing] = useState(true);
@@ -73,33 +75,81 @@ export const AppNavigation = () => {
   const auth_token = useSelector((state) => state.auth.auth_token);
   return (
     <NavigationContainer theme={MyTheme}>
-      <Stack.Navigator
-        initialRouteName={user ? 'doors' : 'signIn'}
-        screenOptions={{
-          headerShown: false,
-        }}>
-        {user ? (
-          auth_token ? (
-            <>
-              <Stack.Screen component={UserDoors} name="doors" />
-              <Stack.Screen component={AddDoorScreen} name="add" />
-              <Stack.Screen component={DoorScreen} name="door" />
-            </>
-          ) : pin_code === '' ? (
-            <Stack.Screen
+      {user ? (
+        auth_token ? (
+          <DoorStack.Navigator
+            initialRouteName="doors"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: '#1B1F26',
+              },
+              headerTintColor: THEME.TEXT_MAIN_COLOR,
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+            }}>
+            <DoorStack.Screen
+              component={UserDoors}
+              name="doors"
+              options={{title: 'Мои двери'}}
+            />
+            <DoorStack.Screen
+              component={AddDoorScreen}
+              name="add"
+              options={({navigation}) => ({
+                title: 'Добавьте дверь',
+                headerLeft: () => (
+                  <HeaderButtons
+                    name={'chevron-back'}
+                    side={'l'}
+                    onPress={() => navigation.goBack()}
+                  />
+                ),
+              })}
+            />
+            <DoorStack.Screen
+              component={DoorScreen}
+              name="door"
+              options={({navigation, route}) => ({
+                title: route.params.door.name,
+                headerLeft: () => (
+                  <HeaderButtons
+                    name={'chevron-back'}
+                    side={'l'}
+                    onPress={() => navigation.goBack()}
+                  />
+                ),
+              })}
+            />
+          </DoorStack.Navigator>
+        ) : pin_code === '' ? (
+          <AuthStack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <AuthStack.Screen
               name="createPinCode"
               component={CreatePinCodeScreen}
             />
-          ) : (
-            <Stack.Screen component={PinCodeScreen} name="pinCode" />
-          )
+          </AuthStack.Navigator>
         ) : (
-          <>
-            <Stack.Screen name="signIn" component={SignInScreen} />
-            <Stack.Screen name="signUp" component={SignUpScreen} />
-          </>
-        )}
-      </Stack.Navigator>
+          <AuthStack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <AuthStack.Screen component={PinCodeScreen} name="pinCode" />
+          </AuthStack.Navigator>
+        )
+      ) : (
+        <AuthStack.Navigator
+          initialRouteName="login"
+          screenOptions={{
+            headerShown: false,
+          }}>
+          <AuthStack.Screen name="login" component={SignInScreen} />
+          <AuthStack.Screen name="signup" component={SignUpScreen} />
+        </AuthStack.Navigator>
+      )}
     </NavigationContainer>
   );
 };

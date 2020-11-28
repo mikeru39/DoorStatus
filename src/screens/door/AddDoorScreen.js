@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {StatusBar, StyleSheet, View} from 'react-native';
-import {THEME} from '../../theme';
-import {AppBar, AppTextInput} from '../../components/uikit';
-import {AppButton} from '../../components/buttons';
+import {StatusBar, StyleSheet, Image, View} from 'react-native';
+import {AppText, AppTextInput} from '../../components/uikit';
+import {AppButton} from '../../components/uikit';
 import {useDispatch, useSelector} from 'react-redux';
-import {setUserDoor} from '../../store/actions/doors';
+import {setLoadingUserDoors, setUserDoor} from '../../store/actions/doors';
 
 const AddDoorScreen = ({navigation}) => {
   const {container, btn, inputId, inputP, inputs} = styles;
@@ -12,8 +11,10 @@ const AddDoorScreen = ({navigation}) => {
   const doors = useSelector((state) => state.doors.allDoors);
   const dispatch = useDispatch();
   const user_doors = useSelector((state) => state.doors.user_doors);
-  const loading = useSelector((state) => state.doors.loadingDoor);
+  const loading = useSelector((state) => state.doors.loadingUserDoors);
   const [id, setId] = useState('');
+  const [err, setErr] = useState('');
+  const [name, setName] = useState('');
   const [prevLoading, setLoading] = useState('');
   const [pass, setPass] = useState('');
   useEffect(() => {
@@ -34,31 +35,48 @@ const AddDoorScreen = ({navigation}) => {
       }
     }
     if (!isAdded) {
+      let count = 0;
       for (let item in doors) {
         if (doors[item].key === id) {
           if (pass === doors[item].pass) {
-            console.log('add');
-            dispatch(setUserDoor(user.uid, 'house', id));
+            dispatch(setLoadingUserDoors(true));
+            dispatch(setUserDoor(user.uid, name, id));
+            count++;
           }
         }
       }
+      if (count !== 1) {
+        setErr('Неверный ID или Пароль');
+      }
+    } else {
+      setErr('Эта дверь уже добавлена');
     }
   };
   return (
     <View style={container}>
-      <AppBar
-        text={'Добавьте дверь'}
-        leftBtnName={'arrow-back-outline'}
-        leftBtnOnPress={() => navigation.goBack()}
-      />
+      <View style={{marginTop: 'auto', alignItems: 'center'}}>
+        <Image
+          source={require('../../img/add.png')}
+          style={{height: 83, width: 166}}
+        />
+      </View>
       <View style={inputs}>
         <AppTextInput
+          iconName={'tablet-portrait'}
           style={inputId}
-          type="email"
+          type="Name"
+          placeHolder="Name"
+          onChange={(text) => setName(text)}
+        />
+        <AppTextInput
+          iconName={'key'}
+          style={inputId}
+          type="ID"
           placeHolder="ID"
           onChange={(text) => setId(text)}
         />
         <AppTextInput
+          iconName={'keypad'}
           style={inputP}
           type="pass"
           placeHolder="PASSWORD"
@@ -66,21 +84,21 @@ const AddDoorScreen = ({navigation}) => {
         />
       </View>
       <View style={btn}>
-        <AppButton
-          text={loading ? 'loading' : 'Добавить'}
-          onPress={() => addDoor()}
-        />
+        <AppButton loading={loading} text={'Добавить'} onPress={addDoor} />
+        <View style={{marginTop: 10}}>
+          <AppText text={err} size={16} color={'red'} />
+        </View>
       </View>
 
-      <StatusBar backgroundColor={THEME.MAIN_COLOR} />
+      <StatusBar backgroundColor={'#1B1F26'} />
     </View>
   );
 };
 const styles = StyleSheet.create({
-  inputId: {marginBottom: 30, marginTop: 'auto'},
-  inputP: {marginBottom: 100},
-  inputs: {marginTop: 'auto', alignItems: 'center'},
-  btn: {alignItems: 'center', marginBottom: 'auto'},
+  inputId: {marginBottom: 20},
+  inputP: {marginBottom: 'auto'},
+  inputs: {marginTop: 'auto', marginBottom: 20, alignItems: 'center'},
+  btn: {alignItems: 'center', marginBottom: 'auto', marginTop: 10},
   container: {
     flex: 1,
   },

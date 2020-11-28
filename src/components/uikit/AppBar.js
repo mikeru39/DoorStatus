@@ -1,9 +1,9 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {THEME} from '../../theme';
-import {AppText} from './index';
+import AppText from './AppText';
 import Icon from 'react-native-vector-icons/Ionicons';
-import AppIconButton from '../buttons/AppIconButton';
+import AppIconButton from './AppIconButton';
 
 const AppBar = ({
   text,

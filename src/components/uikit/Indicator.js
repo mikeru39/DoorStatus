@@ -1,41 +1,22 @@
-import React, {useEffect} from 'react';
-import {View, StyleSheet, Animated} from 'react-native';
-import {Neomorph} from 'react-native-neomorph-shadows';
-import {THEME} from '../../theme';
+import React from 'react';
+import {View, StyleSheet} from 'react-native';
 
 const Indicator = ({status, color}) => {
   const {circle} = styles;
-
-  if (status) {
-    return (
-      <Neomorph
-        style={{
-          ...circle,
-          backgroundColor: color,
-          shadowRadius: 3,
-        }}
-      />
-    );
-  } else {
-    return (
-      <Neomorph
-        style={{
-          backgroundColor: THEME.MAIN_COLOR,
-          shadowRadius: 3,
-          height: 20,
-          width: 20,
-          borderRadius: 20,
-        }}>
-        <View style={{...circle, backgroundColor: THEME.MAIN_COLOR}} />
-      </Neomorph>
-    );
-  }
+  return (
+    <View
+      style={{
+        ...circle,
+        backgroundColor: status ? color : 'rgba(238, 238, 238, 0.2)',
+      }}
+    />
+  );
 };
 const styles = StyleSheet.create({
   circle: {
-    height: 20,
-    width: 20,
-    borderRadius: 20,
+    height: 25,
+    width: 25,
+    borderRadius: 25 / 2,
   },
 });
 export default Indicator;

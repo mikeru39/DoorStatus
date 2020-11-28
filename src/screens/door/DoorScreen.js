@@ -1,72 +1,89 @@
-import React from 'react';
-import {View, StyleSheet, StatusBar} from 'react-native';
-import {AppText, AppBar} from '../../components/uikit';
-import {THEME} from '../../theme';
-import ToggleStatusButton from '../../components/buttons/ToggleStatusButton';
-import BottomSheet from 'reanimated-bottom-sheet';
+import React, {useEffect, useState} from 'react';
+import {StatusBar, StyleSheet, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {changeDoorStatus} from '../../store/actions/doors';
-import BottomSheetContent from '../../components/cards/BottomSheetContent';
+import {AppText, Loading} from '../../components/uikit';
+import ToggleStatusButton from '../../components/uikit/ToggleStatusButton';
+import ScrollBottomSheet from 'react-native-scroll-bottom-sheet';
 import {winH} from '../../constants';
+import {changeDoorStatus} from '../../store/actions/doors';
+import {LogCard} from '../../components/cards';
+
 const DoorScreen = ({navigation, route}) => {
-  const {key, name} = route.params?.door;
+  const [door, setDoor] = useState(undefined);
+  const {name, key} = route.params.door;
   const dispatch = useDispatch();
-  const sheetRef = React.useRef(null);
-  const door = useSelector((state) => state.doors.doors).find(
-    (store) => store.key === key,
+  const stateDoor = useSelector((state) => state.doors.doors).find(
+    (item) => item.key === key,
   );
+  useEffect(() => {
+    if (stateDoor !== door) {
+      setDoor(stateDoor);
+    }
+  }, [stateDoor, door]);
   const onPress = async (state) => {
     dispatch(changeDoorStatus(state, key));
   };
-  const renderContent = () => <BottomSheetContent log={door.log} />;
-  const {container, title, inputE, inputP, bottomBtn} = styles;
+  const {container, status} = styles;
   return (
-    <View style={container}>
-      <AppBar
-        text={name}
-        rightBtnName={'settings-outline'}
-        leftBtnName={'arrow-back'}
-        leftBtnOnPress={() => navigation.goBack()}
-      />
-      <View
-        style={{
-          marginTop: 'auto',
-          marginBottom: 'auto',
-          alignSelf: 'center',
-          alignItems: 'center',
-        }}>
-        <ToggleStatusButton
-          init={door.isLock}
-          onPress={(state) => onPress(state)}
-        />
-        <AppText text={'Дверь закрыта'} />
-      </View>
-      <BottomSheet
-        enabledInnerScrolling={true}
-        // enabledContentGestureInteraction={false}
-        ref={sheetRef}
-        snapPoints={[80, winH * 0.5 + 10]}
-        renderContent={renderContent}
-      />
-      <StatusBar backgroundColor={THEME.MAIN_COLOR} />
+    <View style={{flex: 1}}>
+      {door !== undefined ? (
+        <View style={container}>
+          <View style={status}>
+            <ToggleStatusButton init={door.isLock} onPress={onPress} />
+            <AppText text={'Дверь закрыта'} />
+          </View>
+          <ScrollBottomSheet
+            initialSnapIndex={2}
+            componentType="FlatList"
+            renderHandle={() => (
+              <View style={styles.header}>
+                <View style={styles.panelHandle} />
+              </View>
+            )}
+            keyExtractor={(i) => i}
+            snapPoints={[80, winH * 0.5 + 10]}
+            data={stateDoor.log}
+            contentContainerStyle={styles.contentContainerStyle}
+            renderItem={({item}) => <LogCard time={item.log} />}
+          />
+
+          <StatusBar backgroundColor={'#1B1F26'} />
+        </View>
+      ) : (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Loading size={'large'} />
+        </View>
+      )}
     </View>
   );
 };
-const styles = StyleSheet.create({
-  title: {
-    marginTop: 'auto',
-  },
 
-  inputE: {marginBottom: 30},
-  inputP: {marginBottom: 70},
-  bottomBtn: {
-    alignSelf: 'flex-end',
+export default DoorScreen;
+const styles = StyleSheet.create({
+  status: {
     marginTop: 'auto',
-    marginBottom: 10,
-    marginRight: 10,
+    marginBottom: 'auto',
+    alignSelf: 'center',
+    alignItems: 'center',
+  },
+  contentContainerStyle: {
+    padding: 16,
+    backgroundColor: '#F3F4F9',
+  },
+  header: {
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingVertical: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  panelHandle: {
+    width: 40,
+    height: 2,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 4,
   },
   container: {
     flex: 1,
   },
 });
-export default DoorScreen;

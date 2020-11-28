@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {View, StyleSheet, StatusBar} from 'react-native';
 import {AppTextInput, AppText, AppBar} from '../../components/uikit';
-import {AppButton} from '../../components/buttons';
+import {AppButton} from '../../components/uikit';
 import {THEME} from '../../theme';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch, useSelector} from 'react-redux';

@@ -10,7 +10,7 @@ import {setPinCode} from '../../store/actions/auth';
 
 const CreatePinCodeScreen = () => {
   const [value, onChangeText] = useState('');
-  const main_color = THEME.ACTIVE_COLOR;
+  const main_color = THEME.TEXT_MAIN_COLOR;
   const [statusColor, setColor] = useState(main_color);
   const [title, setTitle] = useState('Создайте пин-код');
   const dispatch = useDispatch();
